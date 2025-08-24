@@ -1,6 +1,6 @@
 export default function Home() {
   return (
-    <main className="max-w-3xl mx-auto p-6">
+    <main className="p-6">
       <h1 className="text-3xl font-bold">Align</h1>
       <p className="mt-2 text-gray-700">
         Match with the right realtor — fast, simple, and free.
