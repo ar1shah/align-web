@@ -12,8 +12,9 @@ export async function POST(req: Request) {
 
     // normalize input just in case
     const input = (password ?? '').toString().trim();
+    const expected = adminPass.toString().trim();
 
-    if (input !== adminPass) {
+    if (input !== expected) {
       return NextResponse.json({ error: 'Invalid password' }, { status: 401 });
     }
 
