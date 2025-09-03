@@ -10,6 +10,15 @@ function getSystemTheme(): Theme {
     : 'light';
 }
 
+function animateThemeTransition(ms = 420) {
+  const doc = document.documentElement;
+  // Respect reduced motion
+  const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduce) return;
+  doc.classList.add('theme-animating');
+  window.setTimeout(() => doc.classList.remove('theme-animating'), ms);
+}
+
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>('light');
   const [mounted, setMounted] = useState(false);
@@ -28,6 +37,7 @@ export default function ThemeToggle() {
     setTheme(next);
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('theme', next);
+    animateThemeTransition(500); // a bit slower for smoother feel
   };
 
   const label = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
@@ -35,14 +45,16 @@ export default function ThemeToggle() {
   return (
     <button
       type="button"
+      role="switch"
+      aria-checked={theme === 'dark'}
       onClick={toggle}
       aria-label={label}
-      className="btn btn-outline"
       title={label}
+      className="switch"
       suppressHydrationWarning
     >
-      {mounted ? (theme === 'dark' ? '🌙 Dark' : '☀️ Light') : 'Theme'}
+      <span className="switch-track" aria-hidden="true" />
+      <span className="switch-thumb" aria-hidden="true" />
     </button>
   );
 }
-

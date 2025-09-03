@@ -60,6 +60,11 @@ body {
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
+/* Smooth theme transitions (opt-in via html.theme-animating for perf) */
+html.theme-animating, html.theme-animating * {
+  transition: background-color 420ms ease, color 420ms ease, border-color 420ms ease, box-shadow 420ms ease;
+}
+
 /* Components */
 .container {
   max-width: 1100px;
@@ -129,4 +134,49 @@ body {
   border-radius: 999px;
   border: 1px solid var(--border);
   color: var(--muted);
+}
+
+/* Toggle switch styles */
+.switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 48px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+}
+.switch-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--primary) 12%, var(--card));
+}
+.switch[aria-checked="true"] .switch-track {
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+}
+.switch-thumb {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin-left: 3px;
+  border-radius: 999px;
+  background: var(--background);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  transform: translateX(0);
+  transition: transform 220ms ease, width 150ms ease;
+}
+.switch[aria-checked="true"] .switch-thumb {
+  transform: translateX(18px);
+}
+.switch:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(99,102,241,0.25);
+}
+.switch:active .switch-thumb { /* tap animation */
+  width: 26px;
 }
