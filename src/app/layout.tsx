@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import Link from 'next/link';
+import ThemeToggle from '@/components/ThemeToggle';
 import './globals.css';
 
 const geistSans = Geist({
@@ -35,6 +36,7 @@ export default function RootLayout({
               <div className="flex items-center gap-2">
                 <Link href="/quiz" className="btn btn-outline">Take the Quiz</Link>
                 <a href="#contact" className="btn btn-primary">Get Started</a>
+                <ThemeToggle />
               </div>
             </nav>
           </header>
