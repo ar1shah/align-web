@@ -1,39 +1,26 @@
-'use client';
+﻿'use client';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { leadFormSchema, type LeadFormData } from '@/lib/validation';
 
-// 1. Define schema
-const FormSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email'),
-  phone: z.string().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
-  property_type: z.string().optional(),
-  budget_min: z
-    .string()
-    .regex(/^\d*$/, 'Must be a number')
-    .optional(),
-  budget_max: z
-    .string()
-    .regex(/^\d*$/, 'Must be a number')
-    .optional(),
-});
-
-type FormData = z.infer<typeof FormSchema>;
+// Schema provided by lib/validation
 
 export default function QuizPage() {
+  const router = useRouter();
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(FormSchema),
+  } = useForm({
+    resolver: zodResolver(leadFormSchema),
   });
 
-  const onSubmit = async (values: FormData) => {
+  const onSubmit = async (values: LeadFormData) => {
+    setSubmitError(null);
     const res = await fetch('/api/leads', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -41,54 +28,58 @@ export default function QuizPage() {
     });
 
     if (res.ok) {
-      alert('Thanks! We’ll match you with realtors shortly.');
       reset();
+      router.push('/thanks');
     } else {
       const { error } = await res.json();
-      alert(error || 'Something went wrong');
+      setSubmitError(error || 'Something went wrong');
     }
   };
 
   return (
-    <main className="max-w-xl mx-auto p-6 space-y-4">
-      <h1 className="text-2xl font-semibold">Find My Realtor</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+    <main className="container section max-w-2xl space-y-4">
+      <h1 className="text-3xl font-semibold">Find My Realtor</h1>
+      <p className="muted">Answer a few quick questions and we’ll match you with top agents.</p>
+      {submitError && (
+        <p className="text-red-400 text-sm" role="alert">{submitError}</p>
+      )}
+      <form onSubmit={handleSubmit(onSubmit)} className="card card-padding space-y-3">
         <div>
           <input
-            className="w-full border p-2 rounded"
+            className="input"
             placeholder="Full name"
             {...register('name')}
           />
           {errors.name && (
-            <p className="text-red-600 text-sm">{errors.name.message}</p>
+            <p className="text-red-400 text-sm">{errors.name.message}</p>
           )}
         </div>
 
         <div>
           <input
-            className="w-full border p-2 rounded"
+            className="input"
             placeholder="Email"
             type="email"
             {...register('email')}
           />
           {errors.email && (
-            <p className="text-red-600 text-sm">{errors.email.message}</p>
+            <p className="text-red-400 text-sm">{errors.email.message}</p>
           )}
         </div>
 
         <input
-          className="w-full border p-2 rounded"
+          className="input"
           placeholder="Phone"
           {...register('phone')}
         />
 
         <div className="grid grid-cols-2 gap-3">
-          <input className="border p-2 rounded" placeholder="City" {...register('city')} />
-          <input className="border p-2 rounded" placeholder="State" {...register('state')} />
+          <input className="input" placeholder="City" {...register('city')} />
+          <input className="input" placeholder="State" {...register('state')} />
         </div>
 
         <input
-          className="w-full border p-2 rounded"
+          className="input"
           placeholder="Property type (e.g., condo)"
           {...register('property_type')}
         />
@@ -96,12 +87,12 @@ export default function QuizPage() {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <input
-              className="border p-2 rounded"
+              className="input"
               placeholder="Budget min"
               {...register('budget_min')}
             />
             {errors.budget_min && (
-              <p className="text-red-600 text-sm">
+              <p className="text-red-400 text-sm">
                 {errors.budget_min.message}
               </p>
             )}
@@ -109,19 +100,19 @@ export default function QuizPage() {
 
           <div>
             <input
-              className="border p-2 rounded"
+              className="input"
               placeholder="Budget max"
               {...register('budget_max')}
             />
             {errors.budget_max && (
-              <p className="text-red-600 text-sm">
+              <p className="text-red-400 text-sm">
                 {errors.budget_max.message}
               </p>
             )}
           </div>
         </div>
 
-        <button className="w-full bg-black text-white p-2 rounded">Submit</button>
+        <button className="w-full btn btn-primary justify-center">Submit</button>
       </form>
     </main>
   );
